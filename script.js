@@ -4,5 +4,3 @@ fetch("https://api.github.com/users/PercyJacks/repos")
 .then((data) => {
   console.log(data)
 })
-
-fetch
