@@ -21,6 +21,7 @@ const getCommit = async (repo) => {
 currentDate = new Date();
 // Avoid comparing time for current date
 currentDate.setHours(0,0,0,0);
+commitsMade = 0
 
 getRepos().then((repos) => {
   for (const repo of repos) {
@@ -35,12 +36,17 @@ getRepos().then((repos) => {
         if (currentDate < commitDate) {
           console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This commit is in date. NICE!!!`);
           // Tally points
+          commitsMade += 1;
         } else {
           console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
           // Send email/notification reminder
-          alert("Make a commit before the day is over!");
+          // alert("Make a commit before the day is over!");
         }
       }
+      // console.log("Inside", commitsMade);
     });
   }
+  console.log("Inside", commitsMade);
 });
+
+// console.log(commitsMade)
