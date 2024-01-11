@@ -37,7 +37,8 @@ getRepos().then((repos) => {
           // Tally points
         } else {
           console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
-          // Send email reminder
+          // Send email/notification reminder
+          alert("Make a commit before the day is over!");
         }
       }
     });
