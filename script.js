@@ -21,11 +21,28 @@ const getCommit = async (repo) => {
 currentDate = new Date();
 // Avoid comparing time for current date
 currentDate.setHours(0,0,0,0);
-commitsMade = 0
+commitsMade = 0;
 
+//
+//
+//
+
+// let repoArray = [];
+
+// async function getRepos2() {
+//   const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
+//   const response = await fetch(endpoint);
+//   const data = await response.json();
+//   return data;
+// }
+
+// await Promise.all(repoArray.push(getRepos2))
+// console.log(repoArray);
+
+// Get the number of commits made today
 getRepos().then((repos) => {
   for (const repo of repos) {
-    getCommit(repo.name).then((commits) => {
+    getCommit(repo.name).then(async (commits) => {
       let latestCommit = commits[0];
       // Check that name matches name of user
       // For some commits, the name is different but usually contains the first name so check for that
@@ -36,17 +53,16 @@ getRepos().then((repos) => {
         if (currentDate < commitDate) {
           console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This commit is in date. NICE!!!`);
           // Tally points
-          commitsMade += 1;
+          await Promise.all(commitsMade += 1);
         } else {
-          console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
+          // console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
           // Send email/notification reminder
           // alert("Make a commit before the day is over!");
         }
       }
-      // console.log("Inside", commitsMade);
     });
   }
   console.log("Inside", commitsMade);
 });
 
-// console.log(commitsMade)
+console.log("Outside", commitsMade);
