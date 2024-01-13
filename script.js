@@ -49,6 +49,7 @@ const tallyCommits = async () => {
 const handleRewards = async () => {
   // If commitsMade is 1 or more, send a notification
   const commitsMade = await tallyCommits();
+  // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
     alert("Good Job! You have made a commit today.");
   } else {
@@ -61,6 +62,6 @@ handleRewards();
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
 // Not yet sure if this needs to be async or not.
-const notifyMessage = () => {
-
+const notifyMessage = (message) => {
+  // Figure out how to display the message like a notification in an app
 };
