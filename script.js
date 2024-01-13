@@ -48,7 +48,13 @@ const tallyCommits = async () => {
 // Function to handle rewards
 const handleRewards = async () => {
   // If commitsMade is 1 or more, send a notification
+  const commitsMade = await tallyCommits();
+  if (commitsMade >= 1) {
+    alert("Good Job! You have made a commit today.");
+  }
 };
+
+handleRewards();
 
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over!")
