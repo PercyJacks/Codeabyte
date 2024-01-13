@@ -45,10 +45,14 @@ const tallyCommits = async () => {
   return commitsMade;
 };
 
-tallyCommits()
-
-// Function to handle notification/email
-// Send email/notification reminder
-        // alert("Make a commit before the day is over!");
-
 // Function to handle rewards
+const handleRewards = async () => {
+  // If commitsMade is 1 or more, send a notification
+};
+
+// How about I create a function that takes in a message to send as a notification? That
+// way it can handle both types of notifications ("good job" | "Make a commit before the day is over!")
+// Not yet sure if this needs to be async or not.
+const notifyMessage = () => {
+
+};
