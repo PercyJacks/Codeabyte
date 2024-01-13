@@ -1,6 +1,6 @@
 
-username = 'PercyJacks'
-firstname = 'Percy'
+let username = 'PercyJacks'
+let firstname = 'Percy'
 // Function to get all the repos for a particular user
 const getRepos = async () => {
   const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
