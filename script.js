@@ -55,6 +55,7 @@ const handleRewards = async () => {
     // alert("Good Job! You have made a commit today.");
   } else {
     notify("Make a commit before the day is over.");
+    // Maybe put time that is leftin the message? e.g. 7 hours left...
     // alert("Make a commit before the day is over.");
   }
 };
