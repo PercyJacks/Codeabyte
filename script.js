@@ -51,17 +51,28 @@ const handleRewards = async () => {
   const commitsMade = await tallyCommits();
   // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
-    alert("Good Job! You have made a commit today.");
+    notify("Good Job! You have made a commit today.");
+    // alert("Good Job! You have made a commit today.");
   } else {
-    alert("Make a commit before the day is over.");
+    notify("Make a commit before the day is over.");
+    // alert("Make a commit before the day is over.");
   }
 };
 
 handleRewards();
 
+
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
-// Not yet sure if this needs to be async or not.
-const notifyMessage = (message) => {
+// Maybe take in extra kawrgs to add to the notification e.g. option to take in a link
+const notify = (message) => {
   // Figure out how to display the message like a notification in an app
+  Notification.requestPermission().then(perm => {
+    if (perm === "granted") {
+      new Notification("Codeabyte", {
+        body: message,
+        icon: "", // Icon for codeabyte maybe?
+      });
+    }
+  });
 };
