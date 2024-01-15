@@ -21,32 +21,6 @@ const getCommit = async (repo) => {
   return data;
 };
 
-// Async function to tally Commits
-const tallyCommits = async () => {
-  let commitsMade = 0;
-  const repos = await getRepos();
-  for (const repo of repos) {
-    let latestCommit = await getCommit(repo.name);
-    latestCommit = latestCommit[0];
-    let commitAuthorName = latestCommit.commit.author.name;
-    if (commitAuthorName.toLowerCase().includes(firstname.toLowerCase())) {
-      // Check that date matches today's date
-      commitDate = new Date(latestCommit.commit.author.date);
-      if (currentDate < commitDate) {
-        console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This commit is in date. NICE!!!`);
-        // Tally points
-        commitsMade += 1;
-      } else {
-        // Handled elsewhere
-        // console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
-      }
-    }
-  }
-  return commitsMade;
-};
-
-
-
 // Async function to tally points
 const tallyPoints = async () => {
   let commitsMade = 0;
@@ -59,12 +33,10 @@ const tallyPoints = async () => {
         // Check that date matches today's date
         commitDate = new Date(commit.commit.author.date);
         if (currentDate < commitDate) {
-          console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This commit is in date. NICE!!!`);
           // Tally points
           commitsMade += 1;
         } else {
           // Handled elsewhere
-          // console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
         }
       }
     }
@@ -73,6 +45,7 @@ const tallyPoints = async () => {
 };
 
 tallyPoints().then((points) => {console.log(points)})
+
 
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
@@ -92,14 +65,14 @@ const notify = (message) => {
 // Function to handle rewards
 const handleRewards = async () => {
   // If commitsMade is 1 or more, send a notification
-  const commitsMade = await tallyCommits();
+  const commitsMade = await tallyPoints();
   // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
-    // notify("Good Job! You have made a commit today.");
+    notify("Good Job! You have made a commit today.");
     // alert("Good Job! You have made a commit today.");
   } else {
-    // notify("Make a commit before the day is over.");
-    // Maybe put time that is leftin the message? e.g. 7 hours left...
+    notify("Make a commit before the day is over.");
+    // Maybe put time that is left in the message? e.g. 7 hours left...
     // alert("Make a commit before the day is over.");
   }
 };
