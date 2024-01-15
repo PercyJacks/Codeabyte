@@ -1,6 +1,10 @@
-
+// Variables
 let username = 'PercyJacks'
 let firstname = 'Percy'
+let currentDate = new Date();
+// Avoid comparing time for current date
+currentDate.setHours(0,0,0,0);
+
 // Function to get all the repos for a particular user
 const getRepos = async () => {
   const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
@@ -14,19 +18,16 @@ const getCommit = async (repo) => {
   const endpoint = new URL(`https://api.github.com/repos/${username}/${repo}/commits`);
   const response = await fetch(endpoint);
   const data = await response.json();
-  return data[0];
+  return data;
 };
 
 // Async function to tally Commits
 const tallyCommits = async () => {
   let commitsMade = 0;
-  // Get current date
-  let currentDate = new Date();
-  // Avoid comparing time for current date
-  currentDate.setHours(0,0,0,0);
   const repos = await getRepos();
   for (const repo of repos) {
     let latestCommit = await getCommit(repo.name);
+    latestCommit = latestCommit[0];
     let commitAuthorName = latestCommit.commit.author.name;
     if (commitAuthorName.toLowerCase().includes(firstname.toLowerCase())) {
       // Check that date matches today's date
@@ -38,12 +39,40 @@ const tallyCommits = async () => {
       } else {
         // Handled elsewhere
         // console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
-
       }
     }
   }
   return commitsMade;
 };
+
+
+
+// Async function to tally points
+const tallyPoints = async () => {
+  let commitsMade = 0;
+  const repos = await getRepos();
+  for (const repo of repos) {
+    let commits = await getCommit(repo.name);
+    for (const commit of commits) {
+      let commitAuthorName = commit.commit.author.name;
+      if (commitAuthorName.toLowerCase().includes(firstname.toLowerCase())) {
+        // Check that date matches today's date
+        commitDate = new Date(commit.commit.author.date);
+        if (currentDate < commitDate) {
+          console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This commit is in date. NICE!!!`);
+          // Tally points
+          commitsMade += 1;
+        } else {
+          // Handled elsewhere
+          // console.log(`Repo: ${repo.name}. Commit Date: ${commitDate.toLocaleDateString()}. This is an old commit!`);
+        }
+      }
+    }
+  }
+  return commitsMade;
+};
+
+tallyPoints().then((points) => {console.log(points)})
 
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
@@ -66,10 +95,10 @@ const handleRewards = async () => {
   const commitsMade = await tallyCommits();
   // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
-    notify("Good Job! You have made a commit today.");
+    // notify("Good Job! You have made a commit today.");
     // alert("Good Job! You have made a commit today.");
   } else {
-    notify("Make a commit before the day is over.");
+    // notify("Make a commit before the day is over.");
     // Maybe put time that is leftin the message? e.g. 7 hours left...
     // alert("Make a commit before the day is over.");
   }
