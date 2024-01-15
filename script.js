@@ -44,8 +44,6 @@ const tallyPoints = async () => {
   return commitsMade;
 };
 
-tallyPoints().then((points) => {console.log(points)})
-
 
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
