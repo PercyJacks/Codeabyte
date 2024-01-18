@@ -6,7 +6,7 @@ let currentDate = new Date();
 currentDate.setHours(0,0,0,0);
 
 // Function to get all the repos for a particular user
-export const getRepos = async () => {
+const getRepos = async () => {
   const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
   const response = await fetch(endpoint);
   const data = await response.json();
@@ -14,7 +14,7 @@ export const getRepos = async () => {
 };
 
 // For each repo get the most recent commit
-export const getCommit = async (repo) => {
+const getCommit = async (repo) => {
   const endpoint = new URL(`https://api.github.com/repos/${username}/${repo}/commits`);
   const response = await fetch(endpoint);
   const data = await response.json();
@@ -22,7 +22,7 @@ export const getCommit = async (repo) => {
 };
 
 // Async function to tally points
-export const tallyPoints = async () => {
+const tallyPoints = async () => {
   let commitsMade = 0;
   const repos = await getRepos();
   console.log(repos)
@@ -51,7 +51,7 @@ tallyPoints()
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
 // Maybe take in extra kawrgs to add to the notification e.g. option to take in a link
-export const notify = (message) => {
+const notify = (message) => {
   // Figure out how to display the message like a notification in an app
   Notification.requestPermission().then(perm => {
     if (perm === "granted") {
@@ -64,7 +64,7 @@ export const notify = (message) => {
 };
 
 // Function to handle rewards
-export const handleRewards = async () => {
+const handleRewards = async () => {
   // If commitsMade is 1 or more, send a notification
   const commitsMade = await tallyPoints();
   // Replace the alerts with notifyMessage function
@@ -77,3 +77,4 @@ export const handleRewards = async () => {
 };
 
 // handleRewards();
+module.exports = getRepos;
