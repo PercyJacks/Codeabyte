@@ -1,3 +1,5 @@
+// Going to change this into a react project
+
 // Variables
 let username = 'PercyJacks'
 let firstname = 'Percy'
