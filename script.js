@@ -1,4 +1,5 @@
 // Going to change this into a react project
+// Learning react tomorrow
 
 // Variables
 let username = 'PercyJacks'
