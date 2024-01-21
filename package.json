@@ -1,9 +1,0 @@
-{
-  "type": "module",
-  "scripts": {
-    "test": "jest --watchAll --verbose --coverage"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  }
-}
