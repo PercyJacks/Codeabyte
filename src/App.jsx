@@ -3,19 +3,18 @@ import { useEffect, useState } from "react";
 export default function App() {
   // Hooks should go at the top
   // Track streak
-  const [streak, setStreak] = useState(0);
-  // const [streak, setStreak] = useState(() => {
-  //   const localValue = localStorage.getItem("STREAK");
-  //   // If no streak stored then return 0
-  //   if (localValue == null) return 0;
-  //   // Return the parsed object in local storage
-  //   return JSON.parse(localValue);
-  // });
+  const [streak, setStreak] = useState(() => {
+    const localValue = localStorage.getItem("STREAK");
+    // If no streak stored then return 0
+    if (localValue == null) return 0;
+    // Return the parsed object in local storage
+    return JSON.parse(localValue);
+  });
 
   // Need streak to persist after refresh
-  // useEffect(() => {
-  //   localStorage.setItem("STREAK", JSON.stringify(streak));
-  // }, [streak]);
+  useEffect(() => {
+    localStorage.setItem("STREAK", JSON.stringify(streak));
+  }, [streak]);
 
   // Add functions here
   // Variables
