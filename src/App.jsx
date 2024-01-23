@@ -1,4 +1,22 @@
+import { useEffect, useState } from "react";
+
 export default function App() {
+  // Hooks should go at the top
+  // Track streak
+  const [streak, setStreak] = useState(0);
+  // const [streak, setStreak] = useState(() => {
+  //   const localValue = localStorage.getItem("STREAK");
+  //   // If no streak stored then return 0
+  //   if (localValue == null) return 0;
+  //   // Return the parsed object in local storage
+  //   return JSON.parse(localValue);
+  // });
+
+  // Need streak to persist after refresh
+  // useEffect(() => {
+  //   localStorage.setItem("STREAK", JSON.stringify(streak));
+  // }, [streak]);
+
   // Add functions here
   // Variables
   let username = "PercyJacks";
@@ -29,7 +47,6 @@ export default function App() {
   const tallyPoints = async () => {
     let commitsMade = 0;
     const repos = await getRepos();
-    console.log(repos);
     for (const repo of repos) {
       let commits = await getCommit(repo.name);
       for (const commit of commits) {
@@ -40,6 +57,7 @@ export default function App() {
           if (currentDate < commitDate) {
             // Tally points
             commitsMade += 1;
+            setStreak(streak + 1);
           } else {
             // Handled elsewhere
           }
@@ -49,7 +67,7 @@ export default function App() {
     return commitsMade;
   };
 
-  tallyPoints();
+  // tallyPoints();
 
   // How about I create a function that takes in a message to send as a notification? That
   // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
@@ -77,6 +95,7 @@ export default function App() {
       notify("Make a commit before the day is over.");
       // Maybe put time that is left in the message? e.g. 7 hours left...
     }
+    console.log(streak);
   };
 
   return handleRewards();
