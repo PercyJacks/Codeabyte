@@ -1,9 +1,12 @@
 // Variables
-let username = 'PercyJacks'
-let firstname = 'Percy'
+let username = "PercyJacks";
+let firstname = "Percy";
 let currentDate = new Date();
 // Avoid comparing time for current date
-currentDate.setHours(0,0,0,0);
+currentDate.setHours(0, 0, 0, 0);
+
+// Streak
+let streak = 0;
 
 // Function to get all the repos for a particular user
 const getRepos = async () => {
@@ -15,7 +18,9 @@ const getRepos = async () => {
 
 // For each repo get the most recent commit
 const getCommit = async (repo) => {
-  const endpoint = new URL(`https://api.github.com/repos/${username}/${repo}/commits`);
+  const endpoint = new URL(
+    `https://api.github.com/repos/${username}/${repo}/commits`
+  );
   const response = await fetch(endpoint);
   const data = await response.json();
   return data;
@@ -44,13 +49,12 @@ const tallyPoints = async () => {
   return commitsMade;
 };
 
-
 // How about I create a function that takes in a message to send as a notification? That
 // way it can handle both types of notifications ("good job" | "Make a commit before the day is over")
 // Maybe take in extra kawrgs to add to the notification e.g. option to take in a link
 const notify = (message) => {
   // Figure out how to display the message like a notification in an app
-  Notification.requestPermission().then(perm => {
+  Notification.requestPermission().then((perm) => {
     if (perm === "granted") {
       new Notification("Codeabyte", {
         body: message,
@@ -67,6 +71,8 @@ const handleRewards = async () => {
   // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
     notify("Good Job! You have made a commit today.");
+    streak = streak + 1;
+    console.log(streak);
   } else {
     notify("Make a commit before the day is over.");
     // Maybe put time that is left in the message? e.g. 7 hours left...
