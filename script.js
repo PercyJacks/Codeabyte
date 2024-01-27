@@ -2,12 +2,10 @@
 let username = "PercyJacks";
 let firstname = "Percy";
 let currentDate = new Date();
+let pointsMultiplier = 5;
 
 // Avoid comparing time for current date
 currentDate.setHours(0, 0, 0, 0);
-
-// helper variables/functions for Streak
-let streak = 0;
 
 // Need function to check if dates are equal because
 // js doesn't allow direct date equality comparison
@@ -26,16 +24,45 @@ const isNewDay = () => {
   let storedDate = new Date(JSON.parse(localStorage.getItem("storedDate")));
   // If the stored date is the current date, it's not a new day
   if (areDatesEqual(storedDate, currentDate)) {
-    console.log("IT IS NOT A NEW DAY");
+    // console.log("👎🏾")
     return false;
   }
-  console.log("IT IS A NEW DAY");
+  // console.log("NEW DAY 👍🏾!")
   // Store the current date
   localStorage.setItem("storedDate", JSON.stringify(currentDate));
   return true;
 };
 
-const loseStreak = () => {
+// Function to get the current streak
+const getStreak = () => {
+  let streak = JSON.parse(localStorage.getItem("streak"));
+  // Default value
+  if (streak == null) {
+    return 0;
+  }
+
+  return streak;
+};
+
+// Function to set the streak
+const setStreak = (value) => {
+  localStorage.setItem("streak", JSON.stringify(value));
+};
+
+// Function to increment the streak
+const incrementStreak = () => {
+  let currentStreak = getStreak();
+  // increment streak
+  currentStreak++;
+  setStreak(currentStreak);
+};
+
+const resetStreak = () => {
+  setStreak(0);
+};
+
+// Function to check whether to reset the streak
+const noStreak = () => {
   // If stored date is null, nothing has happened yet
   if (localStorage.getItem("storedDate") == null) {
     return false;
@@ -46,45 +73,70 @@ const loseStreak = () => {
   return dateDifference(storedDate, currentDate) > 1;
 };
 
+// Function to calculate points
+const calculatePoints = (commitsMade) => {
+  // Get points
+  let storedPoints = JSON.parse(localStorage.getItem("points"));
+  let tempPoints;
+  // Default value
+  if (storedPoints == null) {
+    tempPoints = 0;
+  }
+
+  tempPoints = storedPoints + commitsMade * pointsMultiplier;
+  // Store the points
+  localStorage.setItem("points", JSON.stringify(tempPoints));
+};
+
 // Function to get all the repos for a particular user
 const getRepos = async () => {
-  const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
-  const response = await fetch(endpoint);
-  const data = await response.json();
-  return data;
+  try {
+    const endpoint = new URL(`https://api.github.com/users/${username}/repos`);
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // For each repo get the most recent commit
 const getCommit = async (repo) => {
-  const endpoint = new URL(
-    `https://api.github.com/repos/${username}/${repo}/commits`
-  );
-  const response = await fetch(endpoint);
-  const data = await response.json();
-  return data;
+  try {
+    const endpoint = new URL(
+      `https://api.github.com/repos/${username}/${repo}/commits`
+    );
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-// Async function to tally points
-const tallyPoints = async () => {
-  let commitsMade = 0;
-  const repos = await getRepos();
-  for (const repo of repos) {
-    let commits = await getCommit(repo.name);
-    for (const commit of commits) {
-      let commitAuthorName = commit.commit.author.name;
-      if (commitAuthorName.toLowerCase().includes(firstname.toLowerCase())) {
-        // Check that date matches today's date
-        commitDate = new Date(commit.commit.author.date);
-        if (currentDate < commitDate) {
-          // Tally points
-          commitsMade += 1;
-        } else {
-          // Handled elsewhere
+// Async function to tally commits
+const tallyCommits = async () => {
+  try {
+    let commitsMade = 0;
+    const repos = await getRepos();
+    for (const repo of repos) {
+      let commits = await getCommit(repo.name);
+      for (const commit of commits) {
+        let commitAuthorName = commit.commit.author.name;
+        if (commitAuthorName.toLowerCase().includes(firstname.toLowerCase())) {
+          // Check that date matches today's date
+          commitDate = new Date(commit.commit.author.date);
+          if (currentDate < commitDate) {
+            // Tally commits
+            commitsMade += 1;
+          }
         }
       }
     }
+    return commitsMade;
+  } catch (error) {
+    console.log(error);
   }
-  return commitsMade;
 };
 
 // How about I create a function that takes in a message to send as a notification? That
@@ -104,21 +156,34 @@ const notify = (message) => {
 
 // Function to handle rewards
 const handleRewards = async () => {
-  // If commitsMade is 1 or more, send a notification
-  const commitsMade = await tallyPoints();
-  if (commitsMade >= 1) {
-    notify("Good Job! You have made a commit today.");
-    // If it's a new day and you have made a commit then increment streak
-    if (isNewDay()) {
-      streak = streak + 1;
+  try {
+    // If commitsMade is 1 or more, send a notification
+    const commitsMade = await tallyCommits();
+    if (commitsMade >= 1) {
+      // notify("Good Job! You have made a commit today.");
+      // If it's a new day and you have made a commit then increment streak
+      if (isNewDay()) {
+        // Increment streak
+        incrementStreak();
+        calculatePoints(commitsMade);
+      }
+    } else {
+      if (noStreak()) {
+        notify(`You've lost your ${getStreak()} day streak 🥲`);
+        resetStreak();
+      }
+      notify("Make a commit before the day is over.");
+      // Maybe put time that is left in the message? e.g. 7 hours left...
     }
-  } else {
-    if (loseStreak()) {
-      notify(`You've lost your ${streak} day streak 🥲`);
-    }
-    notify("Make a commit before the day is over.");
-    // Maybe put time that is left in the message? e.g. 7 hours left...
+
+    // notify(`You earned ${localStorage.getItem("points")} points today`);
+  } catch (error) {
+    console.log(error);
   }
 };
 
-handleRewards().then(console.log(streak));
+handleRewards();
+// localStorage.removeItem("storedDate")
+// localStorage.removeItem("streak")
+// localStorage.clear()
+console.log("current streak:", getStreak());
