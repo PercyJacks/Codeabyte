@@ -2,11 +2,49 @@
 let username = "PercyJacks";
 let firstname = "Percy";
 let currentDate = new Date();
+
 // Avoid comparing time for current date
 currentDate.setHours(0, 0, 0, 0);
 
-// Streak
+// helper variables/functions for Streak
 let streak = 0;
+
+// Need function to check if dates are equal because
+// js doesn't allow direct date equality comparison
+const areDatesEqual = (date1, date2) => {
+  return !(date1 > date2 || date1 < date2);
+};
+
+const dateDifference = (date1, date2) => {
+  let dayInMs = 24 * 60 * 60 * 1000;
+  return Math.abs(new Date(date1 - date2) / dayInMs);
+};
+
+// Function to check if it's a new day.
+// Since we only want to calculate the streak daily
+const isNewDay = () => {
+  let storedDate = new Date(JSON.parse(localStorage.getItem("storedDate")));
+  // If the stored date is the current date, it's not a new day
+  if (areDatesEqual(storedDate, currentDate)) {
+    console.log("IT IS NOT A NEW DAY");
+    return false;
+  }
+  console.log("IT IS A NEW DAY");
+  // Store the current date
+  localStorage.setItem("storedDate", JSON.stringify(currentDate));
+  return true;
+};
+
+const loseStreak = () => {
+  // If stored date is null, nothing has happened yet
+  if (localStorage.getItem("storedDate") == null) {
+    return false;
+  }
+
+  // If stored date - current date > 1, lose streak
+  let storedDate = new Date(JSON.parse(localStorage.getItem("storedDate")));
+  return dateDifference(storedDate, currentDate) > 1;
+};
 
 // Function to get all the repos for a particular user
 const getRepos = async () => {
@@ -68,15 +106,19 @@ const notify = (message) => {
 const handleRewards = async () => {
   // If commitsMade is 1 or more, send a notification
   const commitsMade = await tallyPoints();
-  // Replace the alerts with notifyMessage function
   if (commitsMade >= 1) {
     notify("Good Job! You have made a commit today.");
-    streak = streak + 1;
-    console.log(streak);
+    // If it's a new day and you have made a commit then increment streak
+    if (isNewDay()) {
+      streak = streak + 1;
+    }
   } else {
+    if (loseStreak()) {
+      notify(`You've lost your ${streak} day streak 🥲`);
+    }
     notify("Make a commit before the day is over.");
     // Maybe put time that is left in the message? e.g. 7 hours left...
   }
 };
 
-handleRewards();
+handleRewards().then(console.log(streak));
