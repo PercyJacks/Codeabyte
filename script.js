@@ -175,7 +175,7 @@ const handleRewards = async () => {
         notify(`You've lost your ${getStreak()} day streak 🥲`);
         resetStreak();
       }
-      // notify("Make a commit before the day is over ⏳");
+      notify("Make a commit before the day is over ⏳");
       // Maybe put time that is left in the message? e.g. 7 hours left...
     }
 
