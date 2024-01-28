@@ -62,15 +62,18 @@ const resetStreak = () => {
 };
 
 // Function to check whether to reset the streak
-const noStreak = () => {
+// Default value of 1 but you can optionally check whether the difference
+// between the last commit date and the current date is greater than the
+// number of days passed in.
+const noStreak = (days = 1) => {
   // If stored date is null, nothing has happened yet
   if (localStorage.getItem("storedDate") == null) {
     return false;
   }
 
-  // If stored date - current date > 1, lose streak
+  // If stored date - current date > days, lose streak
   let storedDate = new Date(JSON.parse(localStorage.getItem("storedDate")));
-  return dateDifference(storedDate, currentDate) > 1;
+  return dateDifference(storedDate, currentDate) > days;
 };
 
 // Function to calculate points
@@ -160,7 +163,7 @@ const handleRewards = async () => {
     // If commitsMade is 1 or more, send a notification
     const commitsMade = await tallyCommits();
     if (commitsMade >= 1) {
-      // notify("Good Job! You have made a commit today.");
+      notify("Good Job! You have made a commit today 🙌🏾");
       // If it's a new day and you have made a commit then increment streak
       if (isNewDay()) {
         // Increment streak
@@ -172,7 +175,7 @@ const handleRewards = async () => {
         notify(`You've lost your ${getStreak()} day streak 🥲`);
         resetStreak();
       }
-      notify("Make a commit before the day is over.");
+      // notify("Make a commit before the day is over ⏳");
       // Maybe put time that is left in the message? e.g. 7 hours left...
     }
 
@@ -187,3 +190,7 @@ handleRewards();
 // localStorage.removeItem("streak")
 // localStorage.clear()
 console.log("current streak:", getStreak());
+// If no streak for 7 days, send termination message
+if (noStreak(7)) {
+  notify("These reminders don’t seem to be working. We’ll stop sending them for now.");
+}
